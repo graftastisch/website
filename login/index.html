@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Anmelden</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#e9e9ec">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="wrap">
+    <!-- Anmelden -->
+    <section class="card" id="loginView">
+      <p class="brand">graftastisch</p>
+      <h1>Anmelden</h1>
+      <form id="loginForm" novalidate>
+        <label class="field"><span>Nutzername</span>
+          <input id="user" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" maxlength="120">
+        </label>
+        <label class="field"><span>Passwort</span>
+          <input id="pass" type="password" autocomplete="current-password" maxlength="200">
+        </label>
+        <p class="msg" id="loginMsg" role="alert" hidden></p>
+        <button class="btn primary wide" id="loginBtn" type="submit">Anmelden</button>
+      </form>
+    </section>
+
+    <p class="msg err" id="fatal" role="alert" hidden></p>
+  </main>
+
+  <script src="../assets/config.js"></script>
+  <script src="../assets/auth.js"></script>
+  <script src="login.js"></script>
+</body>
+</html>
