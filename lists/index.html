@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Listen</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#fafafa">
+  <link rel="stylesheet" href="style.css">
+  <script src="../assets/config.js"></script>
+  <script src="../assets/auth.js"></script>
+  <script>Auth.guard('../login/');</script>
+</head>
+<body>
+  <div class="window" id="window">
+
+    <header class="toolbar">
+      <button type="button" class="icon-btn" id="sidebarToggle" aria-expanded="true" aria-controls="side"
+              aria-label="Seitenleiste ein- oder ausblenden" title="Seitenleiste ein- oder ausblenden">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="5" width="18" height="14" rx="3"/>
+          <path d="M7.7 8.2v7.6"/>
+        </svg>
+      </button>
+      <h1>Listen</h1>
+
+      <label class="search">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+        <input id="q" type="search" placeholder="In allen Listen suchen" autocomplete="off" spellcheck="false" aria-label="In allen Listen suchen">
+      </label>
+
+      <span class="spacer"></span>
+      <button type="button" class="btn small primary" id="newListBtn">Neue Liste</button>
+      <span class="who" id="whoAmI" hidden></span>
+      <a class="btn small" id="dashBtn" href="../dashboard/">Dashboard</a>
+      <button type="button" class="btn small" id="logoutBtn" hidden>Abmelden</button>
+    </header>
+
+    <div class="layout" id="layout">
+
+      <!-- ============ Seitenleiste ============ -->
+      <aside class="side" id="side" aria-label="Listen">
+        <div class="side-inner">
+          <nav class="nav" id="navSmart" aria-label="Übersichten"></nav>
+          <h2>Meine Listen</h2>
+          <nav class="nav" id="navLists" aria-label="Meine Listen"></nav>
+          <p class="side-empty" id="sideEmpty" hidden>Noch keine Liste.</p>
+          <button type="button" class="btn wide" id="newListSide">+ Neue Liste</button>
+        </div>
+      </aside>
+
+      <!-- ============ Inhalt ============ -->
+      <main class="main" id="main">
+        <header class="head" id="head">
+          <span class="badge" id="hBadge" aria-hidden="true"></span>
+          <div class="head-text">
+            <h2 id="hTitle"></h2>
+            <p id="hSub"></p>
+          </div>
+          <button type="button" class="btn small" id="editListBtn">Liste bearbeiten</button>
+        </header>
+
+        <div class="controls" id="controls">
+          <div class="seg" role="group" aria-label="Anzeigen">
+            <button type="button" data-filter="open" aria-pressed="false">Offen</button>
+            <button type="button" data-filter="all" aria-pressed="true">Alle</button>
+            <button type="button" data-filter="done" aria-pressed="false">Erledigt</button>
+          </div>
+          <label class="sortsel">Sortieren
+            <select id="sortSel" aria-label="Sortieren">
+              <option value="manual">Eigene Reihenfolge</option>
+              <option value="date">Datum</option>
+              <option value="title">Titel</option>
+              <option value="priority">Wichtigkeit</option>
+              <option value="rating">Bewertung</option>
+              <option value="new">Zuletzt hinzugefügt</option>
+            </select>
+          </label>
+          <span class="spacer"></span>
+          <button type="button" class="btn small" id="clearDone" hidden>Erledigte löschen</button>
+        </div>
+
+        <form class="quick" id="quick" autocomplete="off">
+          <input id="quickInput" maxlength="300" placeholder="Neuer Eintrag … (Enter zum Hinzufügen)" aria-label="Neuer Eintrag">
+          <button type="submit" class="btn primary" id="quickAdd">Hinzufügen</button>
+          <button type="button" class="btn" id="quickMore" title="Mit allen Feldern anlegen">Mehr …</button>
+        </form>
+
+        <div class="scroll" id="scroll">
+          <div class="items" id="items" role="list"></div>
+          <div class="empty" id="empty" hidden></div>
+        </div>
+      </main>
+    </div>
+
+    <footer class="status" id="status" role="status" aria-live="polite"></footer>
+  </div>
+
+  <p class="fatal" id="fatal" role="alert" hidden></p>
+
+  <!-- Liste anlegen / bearbeiten -->
+  <dialog id="listDialog" aria-labelledby="listTitle">
+    <form class="sheet small" id="listForm" novalidate>
+      <div class="sheet-head"><span class="badge" id="lBadge" aria-hidden="true"></span><div class="head-text"><h2 id="listTitle"></h2></div><button type="button" class="x" data-close aria-label="Schliessen">×</button></div>
+      <label class="field"><span>Name</span><input id="lName" maxlength="100" placeholder="z. B. Bücher" autocomplete="off"></label>
+      <label class="field"><span>Art der Liste</span>
+        <select id="lKind"></select>
+      </label>
+      <p class="msg" id="lKindHint"></p>
+      <div class="field"><span>Symbol</span>
+        <div class="row"><input id="lIcon" class="emoji-input" maxlength="8" aria-label="Symbol"><div class="swatches icons" id="lIcons"></div></div>
+      </div>
+      <div class="field"><span>Farbe</span><div class="swatches" id="lColors"></div></div>
+      <p class="form-error" id="lError" role="alert" hidden></p>
+      <div class="actions">
+        <button type="button" class="btn danger" id="lDelete" hidden>Liste löschen</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn" data-close>Abbrechen</button>
+        <button type="submit" class="btn primary" id="lSave">Speichern</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Eintrag anlegen / bearbeiten -->
+  <dialog id="itemDialog" aria-labelledby="iHeading">
+    <form class="sheet" id="itemForm" novalidate>
+      <div class="sheet-head"><span class="badge" id="iBadge" aria-hidden="true"></span><div class="head-text"><h2 id="iHeading"></h2><p id="iSub"></p></div><button type="button" class="x" data-close aria-label="Schliessen">×</button></div>
+      <label class="field"><span>Titel</span><input id="iTitle" maxlength="300" autocomplete="off"></label>
+      <label class="field" data-f="subtitle"><span id="iSubtitleLbl">Zusatz</span><input id="iSubtitle" maxlength="300" autocomplete="off"></label>
+      <label class="field" data-f="notes"><span>Beschreibung</span><textarea id="iNotes" rows="4" maxlength="10000"></textarea></label>
+      <div class="grid2">
+        <label class="field" data-f="date"><span id="iDateLbl">Datum</span><input id="iDate" type="date"></label>
+        <label class="field" data-f="time"><span>Uhrzeit</span><input id="iTime" type="time"></label>
+      </div>
+      <label class="field" data-f="place"><span id="iPlaceLbl">Ort</span>
+        <span class="row"><input id="iPlace" maxlength="300" autocomplete="off"><a class="btn" id="iMap" target="_blank" rel="noopener noreferrer" hidden>Karte</a></span>
+      </label>
+      <label class="field" data-f="url"><span>Link</span>
+        <span class="row"><input id="iUrl" type="text" inputmode="url" maxlength="2000" placeholder="https://…" autocomplete="off"><a class="btn" id="iOpen" target="_blank" rel="noopener noreferrer" hidden>Öffnen</a></span>
+      </label>
+      <div class="grid2">
+        <div class="field" data-f="rating"><span>Bewertung</span><div class="stars" id="iStars" role="radiogroup" aria-label="Bewertung"></div></div>
+        <label class="field" data-f="priority"><span>Wichtigkeit</span>
+          <select id="iPriority"><option value="0">Normal</option><option value="1">Niedrig</option><option value="2">Hoch</option><option value="3">Dringend</option></select>
+        </label>
+      </div>
+      <div class="grid2">
+        <label class="field"><span>Liste</span><select id="iList"></select></label>
+        <div class="field"><span>Status</span>
+          <label class="check"><input type="checkbox" id="iDone"><span id="iDoneLbl">Erledigt</span></label>
+        </div>
+      </div>
+      <p class="form-error" id="iError" role="alert" hidden></p>
+      <div class="actions">
+        <button type="button" class="btn danger" id="iDelete" hidden>Löschen</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn" data-close>Abbrechen</button>
+        <button type="submit" class="btn primary" id="iSave">Speichern</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Bestätigen -->
+  <dialog id="confirmDialog" aria-labelledby="confirmTitle">
+    <div class="sheet small">
+      <div class="sheet-head"><div class="head-text"><h2 id="confirmTitle"></h2></div><button type="button" class="x" data-close aria-label="Schliessen">×</button></div>
+      <p class="msg" id="confirmText" style="margin:0"></p>
+      <p class="form-error" id="confirmErr" role="alert" hidden></p>
+      <div class="actions"><span class="spacer"></span>
+        <button type="button" class="btn" data-close>Abbrechen</button>
+        <button type="button" class="btn danger" id="confirmOk">OK</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="lists.js"></script>
+</body>
+</html>

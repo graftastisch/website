@@ -1,0 +1,45 @@
+/* Dokument-Anzeige (PDF, Word, TXT) – gemeinsam für Wochenplan und Dateien.
+   Erwartet auf der Seite: --text, --muted, --blue, --line, --line-strong sowie .btn, .sheet, .x */
+.slide.doc { background: #fff; }
+.doc-tile { position: absolute; inset: 0; display: flex; flex-direction: column; text-align: left; cursor: default; }
+.doc-tile.more { cursor: zoom-in; }
+.doc-tile:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px; }
+.doc-paper { position: relative; flex: 1; min-height: 0; overflow: hidden; padding: 12px 16px 0; font-size: 12px; line-height: 1.45; color: var(--text); background: #fff; }
+.doc-paper.pdf { padding: 0; background: #e9e9ed; }
+.doc-tile.more .doc-paper::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 46px; pointer-events: none; background: linear-gradient(to bottom, rgba(255,255,255,0), #fff 92%); }
+.doc-tile.more .doc-paper.pdf::after { background: linear-gradient(to bottom, rgba(233,233,237,0), rgba(233,233,237,.95) 92%); }
+.doc-paper canvas { display: block; max-width: 100%; }
+.doc-note { margin: 0; padding-top: 26px; text-align: center; color: var(--muted); font-size: 12.5px; }
+.doc-text { margin: 0; font: 11.5px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+.doc-text.big { font-size: 13px; }
+.doc-bar { flex: none; display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 10px; font-size: 12px; background: #f5f5f7; border-top: 1px solid var(--line); }
+.doc-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+.doc-more { flex: none; color: var(--blue); font-weight: 500; }
+.doc-dl { flex: none; color: var(--muted); text-decoration: none; font-size: 14px; padding: 2px 4px; border-radius: 6px; }
+.doc-dl:hover { color: var(--blue); background: #e8e8ed; }
+.doc-ext { flex: none; padding: 1px 6px; border-radius: 5px; font-size: 10px; font-weight: 700; letter-spacing: .04em; color: #fff; background: #8e8e93; }
+.doc-ext.k-pdf { background: #ff3b30; }
+.doc-ext.k-docx, .doc-ext.k-doc { background: #2b6cd9; }
+
+.docx p, .docx .li, .docx h2, .docx h3, .docx h4 { margin: 0 0 .55em; overflow-wrap: anywhere; }
+.docx .gap { height: .6em; margin: 0; }
+.docx .h { line-height: 1.25; }
+.docx h2, .docx h3, .docx h4 { text-transform: none; letter-spacing: 0; color: inherit; font-weight: 700; }
+.docx h2 { font-size: 1.45em; } .docx h3 { font-size: 1.22em; } .docx h4 { font-size: 1.08em; }
+.docx .li { display: flex; gap: 6px; }
+.docx .li .mark { flex: none; min-width: 1.2em; }
+.docx table { border-collapse: collapse; margin: 0 0 .7em; max-width: 100%; }
+.docx td { border: 1px solid var(--line-strong); padding: 3px 6px; vertical-align: top; }
+
+dialog#docDialog { width: min(920px, 96vw); }
+.sheet.doc-sheet { display: flex; flex-direction: column; padding: 0; overflow: hidden; max-height: 92vh; }
+.doc-head { flex: none; display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); background: #fafafc; }
+.doc-title { flex: 1; min-width: 0; margin: 0; font-size: 15px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.doc-actions a { text-decoration: none; }
+.doc-body { flex: 1; min-height: 0; overflow: auto; padding: 18px 14px 24px; background: #ececf0; -webkit-overflow-scrolling: touch; }
+.doc-page { max-width: 820px; margin: 0 auto; padding: 36px 44px; background: #fff; border: 1px solid var(--line-strong); box-shadow: 0 2px 10px rgba(0,0,0,.08); font-size: 14px; line-height: 1.55; min-height: 50vh; }
+.doc-body > .doc-text { max-width: 820px; margin: 0 auto; padding: 22px 26px; background: #fff; border: 1px solid var(--line-strong); box-shadow: 0 2px 10px rgba(0,0,0,.08); }
+.pdf-page { margin: 0 auto 14px; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,.18); display: grid; place-items: center; color: var(--muted); }
+.pdf-page canvas { display: block; }
+@media (max-width: 560px) { .doc-page { padding: 18px 16px; } }
+

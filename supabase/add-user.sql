@@ -1,0 +1,17 @@
+-- ============================================================================
+-- Neuen Nutzer anlegen
+--
+-- Supabase-Dashboard → Authentication → Users → "Add user" → "Create new user"
+--   E-Mail:   beliebige Adresse, oder <nutzername>@graftastisch.app
+--             (Domain = LOGIN_EMAIL_DOMAIN in assets/config.js)
+--   Passwort: frei wählen (lässt sich später im Dashboard unter Einstellungen ändern)
+--   "Auto Confirm User" einschalten
+--
+-- Das war's: Jedes Konto bekommt automatisch seinen eigenen, leeren Wochenplan.
+-- Angemeldet wird mit der E-Mail-Adresse. Für Adressen @graftastisch.app genügt
+-- der Teil vor dem @ als Nutzername.
+--
+-- Nur nötig, wenn eine spätere Anwendung die Freigabeliste (public.members) nutzt:
+-- insert into public.members (user_id)
+-- select id from auth.users where email = 'ADRESSE' on conflict do nothing;
+-- ============================================================================

@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dateien</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#fafafa">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="../assets/docs.css">
+  <script src="../assets/config.js"></script>
+  <script src="../assets/auth.js"></script>
+  <script>Auth.guard('../login/');</script>
+</head>
+<body>
+  <div class="window" id="window">
+
+    <header class="toolbar">
+      <button type="button" class="icon-btn" id="sidebarToggle" aria-expanded="true" aria-controls="side"
+              aria-label="Seitenleiste ein- oder ausblenden" title="Seitenleiste ein- oder ausblenden">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="5" width="18" height="14" rx="3"/>
+          <path d="M7.7 8.2v7.6"/>
+        </svg>
+      </button>
+      <h1>Dateien</h1>
+
+      <label class="search">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+        <input id="q" type="search" placeholder="Suchen" autocomplete="off" spellcheck="false" aria-label="Dateien suchen">
+      </label>
+
+      <span class="spacer"></span>
+
+      <div class="seg" role="group" aria-label="Ansicht">
+        <button type="button" id="viewList" aria-pressed="true" title="Liste" aria-label="Liste">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <button type="button" id="viewGrid" aria-pressed="false" title="Raster" aria-label="Raster">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="6.5" height="6.5" rx="1.2"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.2"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.2"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.2"/></svg>
+        </button>
+      </div>
+
+      <button type="button" class="btn small" id="newFolder">Neuer Ordner</button>
+      <span class="split">
+        <button type="button" class="btn small primary" id="uploadBtn">Hochladen</button>
+        <button type="button" class="btn small primary caret" id="uploadMore" aria-haspopup="menu" aria-expanded="false" aria-label="Weitere Optionen zum Hochladen">▾</button>
+        <div class="menu" id="uploadMenu" role="menu" hidden>
+          <button type="button" role="menuitem" id="upFiles">Dateien …</button>
+          <button type="button" role="menuitem" id="upDir">Ordner …</button>
+        </div>
+      </span>
+
+      <span class="who" id="whoAmI" hidden></span>
+      <a class="btn small" id="dashBtn" href="../dashboard/">Dashboard</a>
+      <button type="button" class="btn small" id="logoutBtn" hidden>Abmelden</button>
+    </header>
+
+    <div class="layout" id="layout">
+
+      <!-- ============ Seitenleiste ============ -->
+      <aside class="side" id="side" aria-label="Orte">
+        <div class="side-inner">
+          <h2>Orte</h2>
+          <nav class="nav" id="nav"></nav>
+          <div class="meter" id="meter" aria-label="Speicher">
+            <div class="meter-bar"><i id="meterFill"></i></div>
+            <p id="meterText"></p>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ============ Inhalt ============ -->
+      <main class="main" id="main">
+        <nav class="crumbs" id="crumbs" aria-label="Pfad"></nav>
+
+        <div class="bulk" id="bulk" hidden>
+          <b id="bulkCount"></b>
+          <span class="spacer"></span>
+          <button type="button" class="btn small" id="bkDownload">Herunterladen</button>
+          <button type="button" class="btn small" id="bkMove">Verschieben …</button>
+          <button type="button" class="btn small" id="bkRestore" hidden>Wiederherstellen</button>
+          <button type="button" class="btn small danger" id="bkDelete">Löschen</button>
+          <button type="button" class="icon-btn small" id="bkClear" aria-label="Auswahl aufheben" title="Auswahl aufheben">×</button>
+        </div>
+
+        <div class="trashbar" id="trashbar" hidden>
+          <span>Gelöschte Dateien bleiben hier, bis du sie endgültig löschst.</span>
+          <button type="button" class="btn small danger" id="emptyTrash">Papierkorb leeren</button>
+        </div>
+
+        <div class="scroll" id="scroll">
+          <div class="list" id="list" role="grid" aria-label="Dateien"></div>
+          <div class="empty" id="empty" hidden></div>
+          <p class="more" id="moreWrap" hidden><button type="button" class="btn small" id="moreBtn">Weitere anzeigen</button></p>
+        </div>
+      </main>
+    </div>
+
+    <footer class="status" id="status" role="status" aria-live="polite"></footer>
+  </div>
+
+  <p class="fatal" id="fatal" role="alert" hidden></p>
+
+  <input type="file" id="pickFiles" multiple hidden>
+  <input type="file" id="pickDir" webkitdirectory hidden>
+
+  <div class="dropzone" id="dropzone" hidden><div>Zum Hochladen loslassen</div></div>
+
+  <!-- Kontextmenü -->
+  <div class="menu ctx" id="ctx" role="menu" hidden></div>
+
+  <!-- Upload-Fortschritt -->
+  <aside class="uploads" id="uploads" aria-label="Uploads" hidden>
+    <header><b id="upTitle">Uploads</b><span class="spacer"></span>
+      <button type="button" class="icon-btn small" id="upCollapse" aria-label="Einklappen" title="Einklappen">–</button>
+      <button type="button" class="icon-btn small" id="upClose" aria-label="Schliessen" title="Schliessen">×</button>
+    </header>
+    <ul id="upList"></ul>
+  </aside>
+
+  <!-- Name eingeben (Neuer Ordner / Umbenennen) -->
+  <dialog id="nameDialog" aria-labelledby="nameTitle">
+    <form class="sheet small" id="nameForm" novalidate>
+      <div class="sheet-head"><div class="head-text"><h2 id="nameTitle"></h2></div><button type="button" class="x" data-close aria-label="Schliessen">×</button></div>
+      <label class="field"><span id="nameLabel">Name</span><input id="nameInput" maxlength="255" autocomplete="off" spellcheck="false"></label>
+      <p class="msg err" id="nameErr" role="alert" hidden></p>
+      <div class="actions"><span class="spacer"></span>
+        <button type="button" class="btn" data-close>Abbrechen</button>
+        <button type="submit" class="btn primary" id="nameOk">OK</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Verschieben -->
+  <dialog id="moveDialog" aria-labelledby="moveTitle">
+    <div class="sheet small">
+      <div class="sheet-head"><div class="head-text"><h2 id="moveTitle">Verschieben nach …</h2><p id="moveSub"></p></div><button type="button" class="x" data-close aria-label="Schliessen">×</button></div>
+      <div class="tree" id="moveTree" role="tree"></div>
+      <p class="msg err" id="moveErr" role="alert" hidden></p>
+      <div class="actions"><button type="button" class="btn" id="moveNew">Neuer Ordner</button><span class="spacer"></span>
+        <button type="button" class="btn" data-close>Abbrechen</button>
+        <button type="button" class="btn primary" id="moveOk">Hierher verschieben</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Teilen -->
+  <dialog id="shareDialog" aria-labelledby="shareTitle">
+    <div class="sheet small">
+      <div class="sheet-head"><div class="head-text"><h2 id="shareTitle">Link teilen</h2><p id="shareName"></p></div><button type="button" class="x" data-close aria-label="Schliessen">×</button></div>
+      <label class="field"><span>Der Link funktioniert für</span>
+        <select id="shareExp">
+          <option value="3600">1 Stunde</option>
+          <option value="86400" selected>1 Tag</option>
+          <option value="604800">7 Tage</option>
+          <option value="2592000">30 Tage</option>
+        </select>
+      </label>
+      <label class="field"><span>Link</span>
+        <span class="row"><input id="shareUrl" readonly><button type="button" class="btn" id="shareCopy">Kopieren</button></span>
+      </label>
+      <p class="msg">Wer den Link hat, kann die Datei ohne Anmeldung öffnen, bis er abläuft. Vorher zurückziehen geht nicht.</p>
+      <p class="msg err" id="shareErr" role="alert" hidden></p>
+    </div>
+  </dialog>
+
+  <!-- Bestätigen -->
+  <dialog id="confirmDialog" aria-labelledby="confirmTitle">
+    <div class="sheet small">
+      <div class="sheet-head"><div class="head-text"><h2 id="confirmTitle"></h2></div><button type="button" class="x" data-close aria-label="Schliessen">×</button></div>
+      <p class="msg" id="confirmText" style="margin:0"></p>
+      <p class="msg err" id="confirmErr" role="alert" hidden></p>
+      <div class="actions"><span class="spacer"></span>
+        <button type="button" class="btn" data-close>Abbrechen</button>
+        <button type="button" class="btn danger" id="confirmOk">OK</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Vorschau -->
+  <dialog id="pvDialog" aria-labelledby="pvTitle">
+    <div class="sheet pv-sheet">
+      <header class="pv-head">
+        <span class="pv-ico" id="pvIcon"></span>
+        <div class="pv-title"><b id="pvTitle"></b><small id="pvMeta"></small></div>
+        <span class="pv-actions">
+          <button type="button" class="icon-btn small" id="pvPrev" aria-label="Vorherige Datei" title="Vorherige (←)">‹</button>
+          <button type="button" class="icon-btn small" id="pvNext" aria-label="Nächste Datei" title="Nächste (→)">›</button>
+          <button type="button" class="btn small" id="pvShare">Teilen</button>
+          <button type="button" class="btn small" id="pvDl">⬇ Herunterladen</button>
+        </span>
+        <button type="button" class="x" data-close aria-label="Schliessen">×</button>
+      </header>
+      <div class="pv-body" id="pvBody"></div>
+    </div>
+  </dialog>
+
+  <script src="zip.js"></script>
+  <script src="../assets/docs.js"></script>
+  <script src="files.js"></script>
+</body>
+</html>
